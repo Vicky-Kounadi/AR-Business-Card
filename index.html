@@ -7,7 +7,11 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
+    <a-scene embedded
+         vr-mode-ui="enabled: false"
+         renderer="antialias: true; alpha: true"
+         arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+
       <a-assets>
         <video id="anim" src="animation.mp4" autoplay loop playsinline crossorigin="anonymous"></video>
       </a-assets>
