@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>AR Business Card</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs>
+      <a-assets>
+        <video id="anim" src="animation.mp4" autoplay loop playsinline crossorigin="anonymous"></video>
+      </a-assets>
+
+      <a-marker type="pattern" url="card.patt">
+        <!-- Video with chroma key shader -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"
+                 material="shader: chromakey; src: #anim; color: 0xf80fdb;"></a-plane>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Start video on touch (required for mobile)
+      const video = document.querySelector("#anim");
+      document.body.addEventListener('click', () => {
+        video.play();
+      });
+    </script>
+
+    <script>
+      // Chroma key shader for A-Frame
+      AFRAME.registerShader('chromakey', {
+        schema: { src: {type: 'map'}, color: {type: 'color', default: '#00ff00'} },
+        vertexShader: `
+          varying vec2 vUV;
+          void main() {
+            vUV = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }`,
+        fragmentShader: `
+          uniform sampler2D src;
+          uniform vec3 color;
+          varying vec2 vUV;
+          void main() {
+            vec4 tex = texture2D(src, vUV);
+            float diff = distance(tex.rgb, color);
+            if(diff < 0.3) discard;
+            gl_FragColor = tex;
+          }`
+      });
+    </script>
+  </body>
+</html>
